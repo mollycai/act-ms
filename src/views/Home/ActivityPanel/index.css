@@ -1,0 +1,81 @@
+.activity-category-panel {
+  width: 100%;
+}
+
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+}
+
+.panel-content {
+  min-height: 200px;
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+}
+
+.categories-container {
+  display: flex;
+  gap: 16px;
+}
+
+/* Grid布局样式 */
+.categories-container.grid {
+  flex-wrap: wrap;
+}
+
+.category-item-grid {
+  flex: 1;
+  min-width: calc(33.333% - 11px);
+  max-width: calc(33.333% - 11px);
+}
+
+/* List布局样式 */
+.categories-container.list {
+  flex-direction: column;
+}
+
+.category-item-list {
+  width: 100%;
+}
+
+/* 响应式布局 */
+@media (max-width: 1200px) {
+  .category-item-grid {
+    min-width: calc(50% - 8px);
+    max-width: calc(50% - 8px);
+  }
+}
+
+@media (max-width: 768px) {
+  .category-item-grid {
+    min-width: 100%;
+    max-width: 100%;
+  }
+}
+
+/* 骨架屏样式 */
+.skeleton-card {
+  padding: 16px;
+}
+
+.skeleton-card-content {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.skeleton-info {
+  flex: 1;
+}
+
+.semi-icon-default {
+  vertical-align: middle;
+}

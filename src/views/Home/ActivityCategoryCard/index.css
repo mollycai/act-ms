@@ -1,0 +1,90 @@
+.activity-category-card {
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border-radius: 8px;
+  border: 1px solid var(--semi-color-border);
+}
+
+.activity-category-card:hover {
+  box-shadow: var(--semi-shadow-elevated);
+  transform: translateY(-2px);
+}
+
+.activity-category-card.selected {
+  border-color: var(--semi-color-primary);
+  box-shadow: 0 0 0 2px var(--semi-color-primary-light-active);
+}
+
+.activity-category-card.grid {
+  min-height: 140px;
+}
+
+.activity-category-card.list {
+  min-height: 80px;
+}
+
+.card-content {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+}
+
+.icon-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.icon {
+  color: var(--semi-color-tertiary-light-default);
+}
+
+.category-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.category-name {
+  font-size: 16px;
+  margin-bottom: 4px;
+  display: block;
+}
+
+.category-desc {
+  font-size: 14px;
+  margin-bottom: 8px;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.category-count {
+  font-size: 12px;
+}
+
+/* List布局下的特殊样式 */
+.activity-category-card.list .card-content {
+  gap: 12px;
+}
+
+.activity-category-card.list .avatar-container {
+  width: 40px;
+  height: 40px;
+}
+
+.activity-category-card.list .category-name {
+  font-size: 15px;
+  margin-bottom: 2px;
+}
+
+.activity-category-card.list .category-desc {
+  font-size: 13px;
+  margin-bottom: 4px;
+}

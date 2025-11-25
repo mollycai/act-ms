@@ -1,0 +1,69 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
+    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  background-color: var(--semi-color-bg-0);
+}
+
+.app-layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 固定头部容器 */
+.fixed-header-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background-color: var(--semi-color-bg-0);
+}
+
+/* Banners容器 */
+.banners-container {
+  width: 100%;
+}
+
+.banner-item {
+  position: relative;
+}
+
+/* Header样式 */
+.app-header {
+  background-color: var(--semi-color-bg-0);
+  border-bottom: 1px solid var(--semi-color-border);
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  height: 64px;
+}
+
+.header-title {
+  color: var(--semi-color-text-0);
+  margin: 0;
+}
+
+/* Content区域样式 */
+.app-content {
+  flex: 1;
+  padding: 0;
+  overflow-y: auto;
+}
+
+.content-container {
+  padding: 24px;
+  min-height: 100%;
+  box-sizing: border-box;
+}
+
+.white-text .semi-typography {
+  color: var(--semi-color-bg-0) !important;
+}

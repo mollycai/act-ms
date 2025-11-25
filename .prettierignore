@@ -1,0 +1,27 @@
+# Dependencies
+node_modules/
+# Build output
+dist/
+build/
+# Coverage directory
+coverage/
+# Environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+# OS generated files
+.DS_Store
+Thumbs.db
+# Logs
+logs
+*.log
+# Editor directories and files
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?

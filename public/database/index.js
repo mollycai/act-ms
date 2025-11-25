@@ -1,4 +1,3 @@
-
 import dbManager from './indexedDBManager.js';
 import initialData from './initialData.js';
 
@@ -9,13 +8,13 @@ window.dbManager = dbManager;
 const initDB = async () => {
   try {
     await dbManager.initializeData(initialData);
-		console.log('数据库初始化完成');
-		// 触发自定义事件通知数据库已初始化
-		window.dispatchEvent(new CustomEvent('databaseInitialized'));
-		return true;
+    console.log('数据库初始化完成');
+    // 触发自定义事件通知数据库已初始化
+    window.dispatchEvent(new CustomEvent('databaseInitialized'));
+    return true;
   } catch (error) {
-		console.error('数据库初始化失败:', error);
-		return false;
+    console.error('数据库初始化失败:', error);
+    return false;
   }
 };
 

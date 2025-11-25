@@ -4,13 +4,13 @@ class IndexedDBManager {
   static instance = null;
   // 防止直接实例化的标记
   static isCreatingInstance = false;
-  
+
   constructor(dbName = 'activityDB', dbVersion = 1) {
     // 防止通过new关键字直接实例化
     if (!IndexedDBManager.isCreatingInstance) {
       throw new Error('请使用IndexedDBManager.getInstance()方法获取实例');
     }
-    
+
     this.dbName = dbName;
     this.dbVersion = dbVersion;
     this.db = null;
@@ -40,12 +40,12 @@ class IndexedDBManager {
     if (this.initializationPromise) {
       return this.initializationPromise;
     }
-    
+
     // 如果已经连接，直接返回
     if (this.connected && this.db) {
       return this.db;
     }
-    
+
     // 创建新的初始化Promise
     this.initializationPromise = new Promise((resolve, reject) => {
       const request = indexedDB.open(this.dbName, this.dbVersion);
@@ -72,9 +72,9 @@ class IndexedDBManager {
 
       request.onupgradeneeded = (event) => {
         this.db = event.target.result;
-        
+
         // 创建各个存储对象
-        this.storeNames.forEach(storeName => {
+        this.storeNames.forEach((storeName) => {
           if (!this.db.objectStoreNames.contains(storeName)) {
             this.db.createObjectStore(storeName, { keyPath: 'id' });
             console.log(`创建存储对象: ${storeName}`);
@@ -82,7 +82,7 @@ class IndexedDBManager {
         });
       };
     });
-    
+
     return this.initializationPromise;
   }
 
@@ -100,25 +100,28 @@ class IndexedDBManager {
   async initializeData(initialData) {
     try {
       await this.init();
-      
+
       for (const [storeName, data] of Object.entries(initialData)) {
         if (!this.storeNames.includes(storeName)) {
           console.warn(`存储对象 ${storeName} 不存在，跳过数据初始化`);
           continue;
         }
-        
-        const { transaction, store } = this.getTransaction(storeName, 'readwrite');
-        
+
+        const { transaction, store } = this.getTransaction(
+          storeName,
+          'readwrite'
+        );
+
         // 检查是否已有数据，避免重复插入
         const countRequest = store.count();
         const count = await new Promise((resolve) => {
           countRequest.onsuccess = () => resolve(countRequest.result);
         });
-        
+
         if (count === 0) {
           // 处理单条数据或数组数据
           if (Array.isArray(data)) {
-            data.forEach(item => {
+            data.forEach((item) => {
               store.add(item);
             });
           } else {
@@ -129,7 +132,7 @@ class IndexedDBManager {
         } else {
           console.log(`${storeName} 已有数据，跳过初始化`);
         }
-        
+
         await new Promise((resolve, reject) => {
           transaction.oncomplete = resolve;
           transaction.onerror = reject;
@@ -146,7 +149,7 @@ class IndexedDBManager {
     try {
       await this.init();
       const { store } = this.getTransaction(storeName);
-      
+
       return new Promise((resolve, reject) => {
         const request = store.getAll();
         request.onsuccess = () => resolve(request.result);
@@ -163,7 +166,7 @@ class IndexedDBManager {
     try {
       await this.init();
       const { store } = this.getTransaction(storeName);
-      
+
       return new Promise((resolve, reject) => {
         const request = store.get(id);
         request.onsuccess = () => resolve(request.result);
@@ -180,7 +183,7 @@ class IndexedDBManager {
     try {
       await this.init();
       const { store } = this.getTransaction(storeName);
-      
+
       return new Promise((resolve, reject) => {
         let request;
         if (indexName && store.indexNames.contains(indexName)) {
@@ -189,7 +192,7 @@ class IndexedDBManager {
         } else {
           request = store.getAll();
         }
-        
+
         request.onsuccess = () => resolve(request.result);
         request.onerror = () => reject(request.error);
       });
@@ -203,10 +206,10 @@ class IndexedDBManager {
   async add(storeName, data) {
     try {
       await this.init();
-      const { transaction, store } = this.getTransaction(storeName, 'readwrite');
-      
+      const { store } = this.getTransaction(storeName, 'readwrite');
+
       const request = store.add(data);
-      
+
       return new Promise((resolve, reject) => {
         request.onsuccess = () => {
           console.log(`添加${storeName}数据成功`);
@@ -227,16 +230,16 @@ class IndexedDBManager {
   async update(storeName, data) {
     try {
       await this.init();
-      const { transaction, store } = this.getTransaction(storeName, 'readwrite');
-      
+      const { store } = this.getTransaction(storeName, 'readwrite');
+
       // 检查数据是否存在
       const existingData = await this.getById(storeName, data.id);
       if (!existingData) {
         throw new Error(`ID为${data.id}的数据不存在`);
       }
-      
+
       const request = store.put(data);
-      
+
       return new Promise((resolve, reject) => {
         request.onsuccess = () => {
           console.log(`更新${storeName}数据成功`);
@@ -257,10 +260,10 @@ class IndexedDBManager {
   async delete(storeName, id) {
     try {
       await this.init();
-      const { transaction, store } = this.getTransaction(storeName, 'readwrite');
-      
+      const { store } = this.getTransaction(storeName, 'readwrite');
+
       const request = store.delete(id);
-      
+
       return new Promise((resolve, reject) => {
         request.onsuccess = () => {
           console.log(`删除${storeName}数据成功，ID:`, id);
@@ -281,10 +284,10 @@ class IndexedDBManager {
   async clear(storeName) {
     try {
       await this.init();
-      const { transaction, store } = this.getTransaction(storeName, 'readwrite');
-      
+      const { store } = this.getTransaction(storeName, 'readwrite');
+
       const request = store.clear();
-      
+
       return new Promise((resolve, reject) => {
         request.onsuccess = () => {
           console.log(`${storeName}数据已清空`);
@@ -300,7 +303,7 @@ class IndexedDBManager {
       throw error;
     }
   }
-  
+
   // 获取连接状态
   isConnected() {
     return this.connected;

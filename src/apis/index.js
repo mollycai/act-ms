@@ -1,5 +1,6 @@
 // 模拟网络延迟函数
-const simulateNetworkDelay = (ms = 500) => new Promise(resolve => setTimeout(resolve, ms));
+const simulateNetworkDelay = (ms = 500) =>
+  new Promise((resolve) => setTimeout(resolve, ms));
 
 // 获取Banner列表
 export const getBanners = async () => {
@@ -22,6 +23,18 @@ export const getActivityCategories = async () => {
     return categories;
   } catch (error) {
     console.error('获取分类数据失败:', error);
+    return [];
+  }
+};
+
+// 获取轮播图数据
+export const getCarousels = async () => {
+  try {
+    await simulateNetworkDelay(600);
+    const carousels = await window.dbManager.getAll('announcements');
+    return carousels;
+  } catch (error) {
+    console.error('获取轮播图数据失败:', error);
     return [];
   }
 };
