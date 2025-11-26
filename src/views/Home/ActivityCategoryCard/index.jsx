@@ -1,4 +1,5 @@
 import { Card, Typography } from '@douyinfe/semi-ui';
+import { useNavigate } from 'react-router-dom';
 import {
   IconTicketCode,
   IconStar,
@@ -24,6 +25,8 @@ const iconMap = {
 };
 
 const ActivityCategoryCard = ({ category }) => {
+  const navigate = useNavigate();
+
   // 直接从category对象获取图标
   const getIcon = () => {
     // 如果category有icon属性，并且在iconMap中有对应的映射，则使用该图标
@@ -38,7 +41,11 @@ const ActivityCategoryCard = ({ category }) => {
     return category.color || 'rgba(var(--semi-blue-5), 1)'; // 默认颜色
   };
 
-  const handleClick = () => {};
+  const handleClick = () => {
+    if (category && category.id) {
+      navigate(`/activity/${category.id}`);
+    }
+  };
 
   return (
     <Card className="activity-category-card" onClick={handleClick}>

@@ -161,39 +161,66 @@ class IndexedDBManager {
     }
   }
 
-  // 根据ID获取单条数据
-  async getById(storeName, id) {
+  // 根据条件查询数据 @TODO 有待打磨
+  async query(storeName, query) {
     try {
       await this.init();
       const { store } = this.getTransaction(storeName);
 
       return new Promise((resolve, reject) => {
-        const request = store.get(id);
-        request.onsuccess = () => resolve(request.result);
-        request.onerror = () => reject(request.error);
-      });
-    } catch (error) {
-      console.error(`获取${storeName}单条数据失败:`, error);
-      throw error;
-    }
-  }
-
-  // 根据条件查询数据
-  async query(storeName, indexName, value) {
-    try {
-      await this.init();
-      const { store } = this.getTransaction(storeName);
-
-      return new Promise((resolve, reject) => {
-        let request;
-        if (indexName && store.indexNames.contains(indexName)) {
-          const index = store.index(indexName);
-          request = index.getAll(value);
-        } else {
-          request = store.getAll();
-        }
-
-        request.onsuccess = () => resolve(request.result);
+        let request = store.getAll();
+        // 这里直接取出所有然后根据键和值进行简单过滤
+        request.onsuccess = () => {
+          // 如果query为空，返回所有数据
+          if (!query || Object.keys(query).length === 0) {
+            resolve(request.result);
+            return;
+          }
+          // 所有满足的数据
+          const allData = request.result.filter((item) => {
+            return Object.keys(query).every((key) => {
+              // 避开分页相关参数
+              if (['page', 'pageSize'].includes(key)) {
+                return true;
+              }
+              // 处理状态
+              if (key === 'status' && query[key]) {
+                return query[key].includes(item[key]);
+              }
+              // 处理特殊的时间类型，判断是否在范围内
+              if (key === 'startTime') {
+                return new Date(item['startTime']) >= new Date(query[key]);
+              }
+              if (key === 'endTime') {
+                return new Date(item['endTime']) <= new Date(query[key]);
+              }
+              // 处理关键字模糊搜索
+              if (key === 'title' && query[key]) {
+                return item[key]
+                  .toLowerCase()
+                  .includes(query[key].toLowerCase());
+              }
+              if (key === 'description' && query[key]) {
+                return item[key]
+                  .toLowerCase()
+                  .includes(query[key].toLowerCase());
+              }
+              if (key === 'rules' && query[key]) {
+                return item[key]
+                  .toLowerCase()
+                  .includes(query[key].toLowerCase());
+              }
+              // 普通键值对匹配
+              return item[key] === query[key];
+            });
+          });
+          // 分页逻辑数据，根据传过来的pageSize和page进行分页
+          const pageData = allData.slice(
+            (query.page - 1) * query.pageSize,
+            query.page * query.pageSize
+          );
+          resolve({ data: pageData, total: allData.length });
+        };
         request.onerror = () => reject(request.error);
       });
     } catch (error) {

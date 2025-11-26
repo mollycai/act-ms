@@ -38,3 +38,16 @@ export const getCarousels = async () => {
     return [];
   }
 };
+
+// 根据活动id获取活动详情
+export const queryActivityList = async (query) => {
+  try {
+    await simulateNetworkDelay(500);
+
+    const activity = await window.dbManager.query('activities', query);
+    return activity;
+  } catch (error) {
+    console.error('根据活动id获取活动详情失败:', error);
+    return null;
+  }
+};

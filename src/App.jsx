@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useNavigate } from 'react-router-dom';
 import { Layout, Typography, Banner } from '@douyinfe/semi-ui';
 import { getBanners } from '@/apis';
 import './index.css';
@@ -7,6 +7,7 @@ import './index.css';
 function App() {
   const { Header, Content } = Layout;
   const { Title } = Typography;
+  const navigate = useNavigate();
 
   const [banners, setBanners] = useState([]);
   const [count, setCount] = useState(0);
@@ -24,6 +25,10 @@ function App() {
   useEffect(() => {
     fetchData();
   }, []);
+
+  function handleTitleClick() {
+    navigate('/home');
+  }
 
   // 关闭一个banner，更新count
   const handleCloseBanner = () => {
@@ -53,8 +58,12 @@ function App() {
       <div className="fixed-header-container">
         <div className="banners-container">{banners.map(renderBanner)}</div>
         <Header className="app-header">
-          <Title heading={3} className="header-title">
-            活动管理系统
+          <Title
+            heading={3}
+            className="header-title"
+            onClick={handleTitleClick}
+          >
+            活动管理平台
           </Title>
         </Header>
       </div>
