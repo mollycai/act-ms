@@ -194,14 +194,19 @@ class IndexedDBManager {
               if (key === 'endTime') {
                 return new Date(item['endTime']) <= new Date(query[key]);
               }
-              // 处理关键字模糊搜索
-              if (key === 'title' && query[key]) {
-                return item[key]
-                  .toLowerCase()
-                  .includes(query[key].toLowerCase());
+              // 处理关键字和管理员模糊搜索
+              if (key === 'keyword' && query[key]) {
+                return (
+                  item['title']
+                    .toLowerCase()
+                    .includes(query[key].toLowerCase()) ||
+                  item['description']
+                    .toLowerCase()
+                    .includes(query[key].toLowerCase())
+                );
               }
-              if (key === 'description' && query[key]) {
-                return item[key]
+              if (key === 'creator' && query[key]) {
+                return item['creator']
                   .toLowerCase()
                   .includes(query[key].toLowerCase());
               }
@@ -214,12 +219,16 @@ class IndexedDBManager {
               return item[key] === query[key];
             });
           });
-          // 分页逻辑数据，根据传过来的pageSize和page进行分页
-          const pageData = allData.slice(
-            (query.page - 1) * query.pageSize,
-            query.page * query.pageSize
-          );
-          resolve({ data: pageData, total: allData.length });
+          if (query.page && query.pageSize) {
+            // 分页逻辑数据，根据传过来的pageSize和page进行分页
+            const pageData = allData.slice(
+              (query.page - 1) * query.pageSize,
+              query.page * query.pageSize
+            );
+            resolve({ data: pageData, total: allData.length });
+          } else {
+            resolve(allData);
+          }
         };
         request.onerror = () => reject(request.error);
       });
@@ -260,8 +269,12 @@ class IndexedDBManager {
       const { store } = this.getTransaction(storeName, 'readwrite');
 
       // 检查数据是否存在
-      const existingData = await this.getById(storeName, data.id);
-      if (!existingData) {
+      const existingData = await new Promise((resolve, reject) => {
+        const getRequest = store.get(data.id);
+        getRequest.onsuccess = () => resolve(getRequest.result);
+        getRequest.onerror = () => reject(getRequest.error);
+      });
+      if (!existingData || existingData.length === 0) {
         throw new Error(`ID为${data.id}的数据不存在`);
       }
 
@@ -270,7 +283,7 @@ class IndexedDBManager {
       return new Promise((resolve, reject) => {
         request.onsuccess = () => {
           console.log(`更新${storeName}数据成功`);
-          resolve(data);
+          resolve('1');
         };
         request.onerror = () => {
           console.error(`更新${storeName}数据失败:`, request.error);

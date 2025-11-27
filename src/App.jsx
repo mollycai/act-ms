@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
-import { Layout, Typography, Banner } from '@douyinfe/semi-ui';
+import { Layout, Typography, Banner, Image } from '@douyinfe/semi-ui';
 import { getBanners } from '@/apis';
 import './index.css';
 
@@ -58,6 +58,7 @@ function App() {
       <div className="fixed-header-container">
         <div className="banners-container">{banners.map(renderBanner)}</div>
         <Header className="app-header">
+          <Image src="/vite.svg" alt="logo" className="header-logo" />
           <Title
             heading={3}
             className="header-title"

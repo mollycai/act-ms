@@ -1,9 +1,10 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useParams, useSearchParams } from 'react-router-dom';
+import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import { Table, Tag, Avatar, Button } from '@douyinfe/semi-ui';
-import * as dateFns from 'date-fns';
+import { formatDateTime } from '@/utils/index.js';
 import { queryActivityList } from '@/apis';
 import ActivitySearchForm from './ActivitySearchForm';
+import { statusConfig, unknownStatus } from '@/constants/index.js';
 
 const ActivityList = () => {
   const [activityList, setActivityList] = useState([]);
@@ -14,7 +15,7 @@ const ActivityList = () => {
   const [total, setTotal] = useState(0);
 
   const { id: categoryId } = useParams();
-
+  const navigate = useNavigate();
   // 表单配置
   const formConfig = {
     items: [
@@ -165,6 +166,12 @@ const ActivityList = () => {
     setPageSize(10);
   };
 
+  // 处理查看详情编辑
+  const handleDetailEdit = (record) => {
+    // 导航到详情页面
+    navigate(`/activity/${categoryId}/detail/${record.id}`);
+  };
+
   // 表格列定义
   const columns = [
     {
@@ -180,12 +187,7 @@ const ActivityList = () => {
       dataIndex: 'status',
       width: 120,
       render: (text) => {
-        const statusConfig = {
-          ongoing: { color: 'green', text: '进行中' },
-          upcoming: { color: 'blue', text: '即将开始' },
-          ended: { color: 'grey', text: '已结束' },
-        };
-        const config = statusConfig[text] || { color: 'grey', text: '未知' };
+        const config = statusConfig[text] || unknownStatus;
         return <Tag color={config.color}>{config.text}</Tag>;
       },
     },
@@ -194,9 +196,7 @@ const ActivityList = () => {
       dataIndex: 'updatedAt',
       width: 200,
       render: (value) => {
-        return value
-          ? dateFns.format(new Date(value), 'yyyy-MM-dd HH:mm')
-          : '-';
+        return formatDateTime(value);
       },
     },
     {
@@ -205,14 +205,8 @@ const ActivityList = () => {
       width: 300,
       render: (text, record) => {
         if (!record.startTime || !record.endTime) return '-';
-        const start = dateFns.format(
-          new Date(record.startTime),
-          'yyyy-MM-dd HH:mm'
-        );
-        const end = dateFns.format(
-          new Date(record.endTime),
-          'yyyy-MM-dd HH:mm'
-        );
+        const start = formatDateTime(record.startTime);
+        const end = formatDateTime(record.endTime);
         return `${start} - ${end}`;
       },
     },
@@ -222,11 +216,11 @@ const ActivityList = () => {
       width: 200,
       render: (text) => {
         return (
-          <div>
-            <Avatar size="small" color="blue" style={{ marginRight: 4 }}>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <Avatar size="small" color="blue" style={{ marginRight: 6 }}>
               {text?.slice(0, 1) || 'U'}
             </Avatar>
-            {text}
+            <span style={{ fontSize: 12 }}>{text}</span>
           </div>
         );
       },
@@ -240,8 +234,7 @@ const ActivityList = () => {
           <Button
             theme="borderless"
             type="primary"
-            href={`#/activity/${record.id}`}
-            target="_blank"
+            onClick={() => handleDetailEdit(record)}
           >
             查看详情 & 编辑
           </Button>
@@ -298,7 +291,7 @@ const ActivityList = () => {
         dataSource={activityList}
         loading={loading}
         pagination={pagination}
-        scroll={{ y: 400 }}
+        scroll={{ y: 480 }}
       />
     </div>
   );

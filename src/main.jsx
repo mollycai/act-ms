@@ -1,5 +1,4 @@
 import { createRoot } from 'react-dom/client';
-import React from 'react';
 import { RouterProvider } from 'react-router-dom';
 import router from '@/routers';
 import './index.css';
@@ -14,9 +13,7 @@ async function startApp() {
 
     console.log('数据库已准备好，启动应用');
     createRoot(document.getElementById('root')).render(
-      <React.StrictMode>
-        <RouterProvider router={router} />
-      </React.StrictMode>
+      <RouterProvider router={router} />
     );
   } catch (error) {
     console.error('启动应用失败:', error);

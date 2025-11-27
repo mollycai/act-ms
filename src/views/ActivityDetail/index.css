@@ -1,0 +1,14 @@
+.activity-detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.activity-detail-item-content {
+  height: 32px;
+}
+
+.activity-detail-item .semi-descriptions-item {
+  line-height: 32px;
+}

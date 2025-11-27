@@ -46,6 +46,11 @@ body {
   height: 64px;
 }
 
+/* 头部logo */
+.header-logo {
+  margin-right: 12px;
+}
+
 .header-title {
   color: var(--semi-color-text-0);
   margin: 0;

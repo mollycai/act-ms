@@ -39,15 +39,29 @@ export const getCarousels = async () => {
   }
 };
 
-// 根据活动id获取活动详情
+// 根据查询参数获取活动详情列表
 export const queryActivityList = async (query) => {
   try {
     await simulateNetworkDelay(500);
-
     const activity = await window.dbManager.query('activities', query);
     return activity;
   } catch (error) {
-    console.error('根据活动id获取活动详情失败:', error);
+    console.error('根据查询参数获取活动详情失败:', error);
+    return null;
+  }
+};
+
+// 更新活动详情
+export const updateActivityDetail = async (activityId, updateData) => {
+  try {
+    await simulateNetworkDelay(500);
+    const updatedActivity = await window.dbManager.update('activities', {
+      id: activityId,
+      ...updateData,
+    });
+    return updatedActivity;
+  } catch (error) {
+    console.error('更新活动详情失败:', error);
     return null;
   }
 };
