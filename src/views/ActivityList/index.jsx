@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
-import { Table, Tag, Avatar, Button } from '@douyinfe/semi-ui';
+import { Table, Tag, Avatar, Button, Skeleton } from '@douyinfe/semi-ui';
 import { formatDateTime } from '@/utils/index.js';
 import { queryActivityList } from '@/apis';
 import ActivitySearchForm from './ActivitySearchForm';
@@ -243,6 +243,40 @@ const ActivityList = () => {
     },
   ];
 
+  // 创建骨架屏占位符
+  const skeletonData = {
+    columns: [1, 2, 3, 4, 5, 6].map((key) => {
+      const item = {};
+      item.title = <Skeleton.Title style={{ width: '100%' }} />;
+      item.dataIndex = `${key}`;
+      return item;
+    }),
+    dataSource: [1, 2, 3, 4].map((key) => {
+      const item = {};
+      item.key = key;
+      [1, 2, 3, 4, 5, 6].forEach((i) => {
+        const width = 50 * i;
+        item[i] = <Skeleton.Paragraph style={{ width: width }} rows={1} />;
+      });
+      return item;
+    }),
+  };
+
+  const skeletonPlaceholder = (
+    <div style={{ position: 'relative' }}>
+      <Table
+        style={{ backgroundColor: 'var(--semi-color-bg-1)' }}
+        columns={skeletonData.columns}
+        dataSource={skeletonData.dataSource}
+        pagination={false}
+        scroll={{ y: 480 }}
+      />
+      <div
+        style={{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0 }}
+      ></div>
+    </div>
+  );
+
   // 构建新的URL参数对象
   const copyParams = () => {
     const newParams = {};
@@ -286,13 +320,14 @@ const ActivityList = () => {
         loading={loading}
       />
 
-      <Table
-        columns={columns}
-        dataSource={activityList}
-        loading={loading}
-        pagination={pagination}
-        scroll={{ y: 480 }}
-      />
+      <Skeleton placeholder={skeletonPlaceholder} loading={loading} active>
+        <Table
+          columns={columns}
+          dataSource={activityList}
+          pagination={pagination}
+          scroll={{ y: 480 }}
+        />
+      </Skeleton>
     </div>
   );
 };
