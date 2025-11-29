@@ -67,6 +67,7 @@ const ActivityCategoryPanel = ({
         <Title heading={4}>{title}</Title>
         <Space>
           <RadioGroup
+            className="activity-category-radio-group"
             type="button"
             buttonSize="small"
             value={layout}

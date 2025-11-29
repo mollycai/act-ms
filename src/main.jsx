@@ -3,6 +3,10 @@ import { RouterProvider } from 'react-router-dom';
 import router from '@/routers';
 import './index.css';
 
+import { GuideProvider } from '@/components/Guide/GuideProvider';
+import { registerGuide } from '@/components/Guide/registry';
+import { guideConfigs } from '@/components/Guide/configs';
+
 // 等待数据库初始化完成
 async function startApp() {
   try {
@@ -12,8 +16,16 @@ async function startApp() {
     }
 
     console.log('数据库已准备好，启动应用');
+
+    // 注册引导弹窗
+    Object.keys(guideConfigs).forEach((key) => {
+      registerGuide(key, { steps: guideConfigs[key] });
+    });
+
     createRoot(document.getElementById('root')).render(
-      <RouterProvider router={router} />
+      <GuideProvider>
+        <RouterProvider router={router} />
+      </GuideProvider>
     );
   } catch (error) {
     console.error('启动应用失败:', error);

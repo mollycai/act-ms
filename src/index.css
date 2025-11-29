@@ -43,7 +43,20 @@ body {
   padding: 0 24px;
   display: flex;
   align-items: center;
+  justify-content: space-between;
   height: 64px;
+}
+
+.app-header-left {
+  display: flex;
+  align-items: center;
+}
+
+.header-icon-help:hover {
+  color: rgba(var(--semi-yellow-4), 1);
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  transform: scale(1.1);
 }
 
 /* 头部logo */

@@ -162,7 +162,11 @@ const ActivityDetail = () => {
       </div>
 
       <div className="activity-detail-content">
-        <Card shadows="hover" style={{ marginBottom: 20 }}>
+        <Card
+          shadows="hover"
+          style={{ marginBottom: 20 }}
+          className="activity-detail-data"
+        >
           <Title heading={4} style={{ marginBottom: 10 }}>
             参与数据
           </Title>
@@ -187,7 +191,11 @@ const ActivityDetail = () => {
           </Skeleton>
         </Card>
 
-        <Card shadows="hover" style={{ marginBottom: 20 }}>
+        <Card
+          shadows="hover"
+          style={{ marginBottom: 20 }}
+          className="activity-detail-main"
+        >
           <Skeleton
             placeholder={placeholder(278, 10)}
             active
@@ -290,7 +298,7 @@ const ActivityDetail = () => {
           </Skeleton>
         </Card>
 
-        <Card shadows="hover">
+        <Card shadows="hover" className="activity-detail-desc">
           <Title heading={4} style={{ marginBottom: 10 }}>
             活动描述
           </Title>
@@ -316,7 +324,11 @@ const ActivityDetail = () => {
           </Skeleton>
         </Card>
 
-        <Card shadows="hover" style={{ marginTop: 20 }}>
+        <Card
+          shadows="hover"
+          style={{ marginTop: 20 }}
+          className="activity-detail-rule"
+        >
           <Title heading={4} style={{ marginBottom: 10 }}>
             参与规则
           </Title>
