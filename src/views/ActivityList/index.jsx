@@ -102,35 +102,29 @@ const ActivityList = () => {
     // 检查URL是否已经有参数
     const hasSearchParams = Array.from(searchParams.keys()).length > 0;
 
-    // 如果URL没有参数，则设置默认参数
+    // 如果URL没有参数，则设置默认参数，并立即返回，防止在同一轮渲染中触发一次默认参数下的查询
     if (!hasSearchParams) {
       setSearchParams({ status: 'ongoing', page: 1, pageSize: 10 });
       setCurrentPage(1);
       setPageSize(10);
-      fetchActivityList({
-        categoryId,
-        status: 'ongoing',
-        page: 1,
-        pageSize: 10,
-      });
-    } else {
-      // 如果URL已有参数，则使用这些参数进行查询
-      const params = {};
-      for (const [key, value] of searchParams.entries()) {
-        if (value !== undefined && value !== null && value !== '') {
-          params[key] = value;
-        }
-      }
-
-      // 更新本地状态
-      const page = searchParams.get('page');
-      const pageSizeParam = searchParams.get('pageSize');
-
-      if (page) setCurrentPage(parseInt(page, 10));
-      if (pageSizeParam) setPageSize(parseInt(pageSizeParam, 10));
-
-      fetchActivityList({ categoryId, ...params });
+      return;
     }
+
+    // 等待URL更新后，再在下一次useEffect运行时再统一读取参数并进行一次查询
+    const params = {};
+    for (const [key, value] of searchParams.entries()) {
+      if (value !== undefined && value !== null && value !== '') {
+        params[key] = value;
+      }
+    }
+
+    const page = searchParams.get('page');
+    const pageSizeParam = searchParams.get('pageSize');
+
+    if (page) setCurrentPage(parseInt(page, 10));
+    if (pageSizeParam) setPageSize(parseInt(pageSizeParam, 10));
+
+    fetchActivityList({ categoryId, ...params });
   }, [categoryId, searchParams, fetchActivityList]);
 
   // 处理表单提交
