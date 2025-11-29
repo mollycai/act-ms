@@ -4,8 +4,9 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
+    "dev": "vite --mode development",
+    "test": "vite build --mode test",
+    "build": "vite build --mode production",
     "lint": "eslint .",
     "format": "prettier --write .",
     "preview": "vite preview",
@@ -33,6 +34,7 @@
     "husky": "^9.1.7",
     "lint-staged": "^16.2.7",
     "prettier": "^3.6.2",
+    "terser": "^5.44.1",
     "vite": "^5.4.10"
   },
   "lint-staged": {
