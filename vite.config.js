@@ -38,7 +38,6 @@ export default defineConfig(({ mode }) => {
       },
       assetsInlineLimit: 10240,
       cssCodeSplit: true,
-      sourcemap: isProd ? 'hidden' : true,
       chunkSizeWarningLimit: 1500,
       brotliSize: true,
       emptyOutDir: true,

@@ -1,8 +1,111 @@
-# React + Vite
+# 基于React18+Vite5+IndexedDB+SemiUI的简易运营平台活动管理页面
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## 介绍
 
-Currently, two official plugins are available:
+项目页面 & 功能：
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- 首页：展示公告Banner、轮播图、活动分类卡片列表（可切换布局样式）
+- 活动列表：搜索表单（可根据关键字、活动状态、时间、创建人进行筛选）、活动列表表格（分页加载）
+- 活动详情页：展示活动参与数据、活动基本信息（支持编辑）
+- 通用页面引导功能（支持手动触发/关闭，自定义配置）
+
+更多内容：参见[项目介绍](PRD.md)
+AI CODING：参见[AI生成的内容](AICODE.md)
+在线地址：
+
+## 数据存储
+
+采用mock数据+IndexdDB进行存储，通过外接JS脚本实现：
+
+- 初始化的mock数据详见[initialData.js](database/initialData.js)
+- 管理IndexedDB实例，实现初始化、简单增删改查
+
+## 交互体验细节
+
+- 基本功能：
+  - 加载异步数据时的骨架屏和点击按钮时的loading
+  - 分页加载列表数据，避免一次性加载大量数据造成卡顿
+  - 完成编辑时的提示和刷新列表数据，表单校验
+  - hover卡片和icon时的样式变化和过渡动画
+- 通用页面指引：
+  - 窗口大小变化或目标元素在滚动时可见的情况下，仍能精准定位目标元素以及提示卡片的定位
+  - 支持上一步/下一步/完成/跳过指引的操作
+  - 定位的目标元素周围添加mask层
+
+## 组件拆分
+
+- 全局组件：公共头部、通用页面指引
+- 业务组件：
+  - 首页：轮播图、活动分类卡片、活动分类卡片布局组件
+  - 活动列表：筛选表单（数据驱动UI），表格（没有封装，因为SemiUI已经高度集成化，没有必要封装）
+
+## 工程化
+
+- 代码规范与自动格式化：采用ESLint、Prettier+husky+lint-stage进行代码规范检查和自动格式化，css内容和团队协作内容少，暂不配置stylelint和commonlint
+- 打包优化：
+  - 采用Vite5的默认配置，开启了代码分割、压缩、删除打印日志和注释等功能
+  - 手动配置了路由懒加载，将首页和活动列表页面的代码拆分成单独的chunk，避免首页加载时加载全部业务代码
+- CI/CD：Github+Vercel在线部署项目
+
+## 通用页面引导功能
+
+### 核心点
+
+- 手动触发/关闭
+- 自定义配置目标元素、提示卡片的内容和位置
+- 分步引导，上一步/下一步/完成/跳过指引的操作
+- 目标元素周围添加mask层，精准定位（自动滚动），展示提示卡片
+
+### 模块划分
+
+整体架构图：
+<img src="/public/structure.png" alt="整体架构图" width="400" />
+
+- 配置模块（可根据规则自定义配置）：`config.js`
+- UI模块（包括：遮罩层，卡片，接收控制模块传递的当前配置步骤和方法）：`GuideOverlay.jsx`
+- 控制模块（提供当前步骤的数据和控制的方法）：`GuideProvider.jsx`
+- 注册模块（用来储存引导步骤的配置）：`registry.js`
+
+### 整体流程
+
+**初始化流程**：
+
+1. 注册引导配置，全局注入引导的相关方法和步骤数据
+2. 点击icon开始引导，获取当前路由，根据路由页面匹配对应页面的引导配置
+
+**核心流程**：
+
+1. 获取当前的引导步骤，目标元素
+2. 监听滚动/窗口尺寸/方向变化和步骤、目标元素选择器（目标元素类名）的变化，自动更新目标元素的定位（通过`getBoundingClientRect()`获取上下左右和宽高）
+3. 获取提示卡片尺寸
+4. 根据目标元素的定位信息和卡片的尺寸，计算出合适的卡片位置（考虑到卡片超出窗口边界的情况）
+5. 展示蒙层和提示卡片
+6. 点击跳过或完成，则关闭蒙层和提示卡片，点击上一步/下一步，则重新开始上述步骤
+
+### 重难点
+
+**计算合适的卡片位置**
+
+支持上下左右四种展示方式，可以自定义配置。难点在动态计算卡片位置，让卡片总是展示在目标元素某一方的正中央，且不能超出窗口边界。
+
+解决方案：
+
+1. useEffect+ResizeObsever监听卡片尺寸的变化，并实时更新卡片尺寸
+2. 拿到最新的卡片尺寸，结合上述获取到的目标元素的定位信息，计算出合适的卡片位置。例如：要将卡片展示在目标元素上方，卡片的 `top = 目标元素的top - 卡片的高度 - 间距`、 `left = 目标元素的left + (目标元素的宽度 - 卡片的宽度) / 2`。当计算出来的top小于窗口margin时，将top设置为窗口margin。
+
+**自动触发滚动 & 窗口大小变化时，仍然能精准定位**
+
+1. 监听定位元素的父元素的`scroll`，窗口的`resize`、`orientationchange`事件，自动触发`onMove()`
+2. `onMove`，主要执行更新目标元素的定位信息（通过`getBoundingClientRect()`获取），并使用`requestAnimationFrame()`进行帧同步。
+3. 操作完后注意解绑相关事件
+
+### 参考
+
+- [Hi~ 这将是一个通用的新手引导解决方案](https://juejin.cn/post/6960493325061193735)
+- [guide](https://github.com/bytedance/guide)
+
+## 项目可优化的点
+
+1. 关于主题的设计（其实项目的颜色都是使用Semi UI的变量，可以根据项目的颜色主题进行自定义配置）
+2. 关于引导系统的适配成本（引入AI用于解决什么问题？？没理解？？）
+3. 目前的数据来源均是mock和IndexedDB进行简单储存，处理大量数据性能肯定不如传统后端
